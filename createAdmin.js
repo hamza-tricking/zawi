@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
 
-const MONGO_URI = 'mongodb://127.0.0.1:27017/zawishop';
+const MONGO_URI = 'mongodb+srv://hamzatricks:hamzatricks@cluster0.sjxud.mongodb.net/za';
 
 const createAdmin = async () => {
     try {
