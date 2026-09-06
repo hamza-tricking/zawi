@@ -52,4 +52,18 @@ const updateOrderStatus = async (req, res, next) => {
     }
 };
 
-module.exports = { getOrders, getOrder, createOrder, updateOrderStatus };
+const deleteOrder = async (req, res, next) => {
+    try {
+        const order = await Order.findByIdAndDelete(req.params.id);
+        if (!order) {
+            const err = new Error('Order not found');
+            err.statusCode = 404;
+            throw err;
+        }
+        res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { getOrders, getOrder, createOrder, updateOrderStatus, deleteOrder };

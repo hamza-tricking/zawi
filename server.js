@@ -10,12 +10,20 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
+const path = require('path');
+const uploadRoutes = require('./routes/uploadRoutes');
+
 const app = express();
 
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+})); // Security headers with cross-origin image support
 app.use(cors());
 app.use(express.json());
+
+// Serve static uploads folder
+app.use(['/api/uploads', '/uploads'], express.static(path.join(__dirname, 'uploads')));
 
 // Request logging middleware for better debugging
 app.use((req, res, next) => {
@@ -27,6 +35,7 @@ app.use((req, res, next) => {
 app.use(['/api/auth', '/auth'], authRoutes);
 app.use(['/api/products', '/products'], productRoutes);
 app.use(['/api/orders', '/orders'], orderRoutes);
+app.use(['/api/upload', '/upload'], uploadRoutes);
 
 // Centralized error handling middleware
 app.use((err, req, res, next) => {

@@ -58,4 +58,70 @@ const getMe = async (req, res, next) => {
     }
 };
 
-module.exports = { login, getMe };
+const getUsers = async (req, res, next) => {
+    try {
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            data: users
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const createUser = async (req, res, next) => {
+    try {
+        const { username, password, role } = req.body;
+        if (!username || !password) {
+            const err = new Error('Please provide username and password');
+            err.statusCode = 400;
+            throw err;
+        }
+
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            const err = new Error('Username already exists');
+            err.statusCode = 400;
+            throw err;
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = await User.create({
+            username,
+            password: hashedPassword,
+            role: role || 'user'
+        });
+
+        res.status(201).json({
+            success: true,
+            data: {
+                _id: user._id,
+                username: user.username,
+                role: user.role,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) {
+            const err = new Error('User not found');
+            err.statusCode = 404;
+            throw err;
+        }
+        res.status(200).json({ success: true, message: 'User deleted' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { login, getMe, getUsers, createUser, deleteUser };
