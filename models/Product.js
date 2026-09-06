@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
     images: {
         type: [String], // Array of image URLs/paths
         default: []
+    },
+    showInHero: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 
