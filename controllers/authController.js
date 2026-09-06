@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const login = async (req, res, next) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, rememberMe } = req.body;
 
         if (!username || !password) {
             const err = new Error('Please provide username and password');
@@ -26,10 +26,13 @@ const login = async (req, res, next) => {
             throw err;
         }
 
+        // If keep connected / rememberMe is enabled, token stays valid for 365 days (1 year)
+        const expiresIn = rememberMe ? '365d' : '30d';
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET || 'fallback_secret_key',
-            { expiresIn: '30d' }
+            { expiresIn }
         );
 
         res.status(200).json({
