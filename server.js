@@ -45,7 +45,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5010;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://hamzatricks:hamzatricks@cluster0.sjxud.mongodb.net/za';
 
 mongoose.connect(MONGO_URI)
