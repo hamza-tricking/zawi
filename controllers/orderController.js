@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Order = require('../models/Order');
 
 const getOrders = async (req, res, next) => {
@@ -26,7 +27,17 @@ const getOrder = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
     try {
         // Public route for customers to place orders
-        const order = await Order.create(req.body);
+        const orderData = { ...req.body };
+        if (orderData.products && Array.isArray(orderData.products)) {
+            orderData.products = orderData.products.map(item => {
+                const cleaned = { ...item };
+                if (cleaned.product && !mongoose.Types.ObjectId.isValid(cleaned.product)) {
+                    delete cleaned.product;
+                }
+                return cleaned;
+            });
+        }
+        const order = await Order.create(orderData);
         res.status(201).json({ success: true, data: order });
     } catch (error) {
         next(error);
