@@ -22,8 +22,18 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 
-// Serve static uploads folder
-app.use(['/api/uploads', '/uploads'], express.static(path.join(__dirname, 'uploads')));
+// Serve static uploads folder (images, videos, assets) with video streaming support
+app.use(['/api/uploads', '/uploads'], express.static(path.join(__dirname, 'uploads'), {
+    maxAge: '7d',
+    setHeaders: (res, filePath) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        if (filePath.endsWith('.mp4')) {
+            res.setHeader('Content-Type', 'video/mp4');
+            res.setHeader('Accept-Ranges', 'bytes');
+        }
+    }
+}));
 
 // Request logging middleware for better debugging
 app.use((req, res, next) => {
