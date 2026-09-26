@@ -19,7 +19,16 @@ const app = express();
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 })); // Security headers with cross-origin image support
-app.use(cors());
+
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: false
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
 // Serve static uploads folder (images, videos, assets) with video streaming support
