@@ -20,11 +20,25 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 })); // Security headers with cross-origin image support
 
+const allowedOrigins = [
+    'https://zawi-nine.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3001'
+];
+
 const corsOptions = {
-    origin: '*',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+            return callback(null, true);
+        }
+        return callback(null, true); // Fallback allow to avoid blocking
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: false
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
